@@ -1,0 +1,10 @@
+/**
+ * Babel config for transpiling JS for React into vanilla JS
+ */
+
+{
+    "presets": [
+        "@babel/preset-env",
+        "@babel/preset-react"
+    ]
+}

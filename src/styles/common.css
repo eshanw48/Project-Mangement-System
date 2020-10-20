@@ -1,0 +1,28 @@
+/*
+Styling rules for base app, and common core components
+*/
+
+/* TODO: decide on color scheme, add colors as variables here */
+:root {
+    --dark-main: #292f4c;
+    --light-main: #ffffff;
+    --success: #00d748;
+    --success-dark: #4ea94a;
+}
+
+body {
+    font-family: "system-ui", Helvetica, Arial, sans-serif;
+}
+
+.Header {
+    background-color: var(--dark-main);
+}
+
+.Logo {
+    width: 42;
+    margin-right: 10;
+}
+
+.LogoLabel {
+    color: var(--light-main);
+}
