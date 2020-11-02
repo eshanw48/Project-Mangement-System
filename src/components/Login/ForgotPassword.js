@@ -3,8 +3,12 @@
  */
 
 // package dependencies
-import React from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import React, { useState } from "react";
+import { Alert, Button, Col, Row } from "react-bootstrap";
+
+// helper functions and constants
+import firebase from "Utilities/Firebase";
+import { FIREBASE_AUTH_ERR_MESSAGES } from "Utilities/constants";
 
 
 /**
@@ -12,14 +16,30 @@ import { Button, Col, Row } from "react-bootstrap";
  * Provides options to move to the sign in and sign up views.
  * 
  * @param {Object} props - component props
- * @param {function} props.onSubmit - callback called on submit
+ * @param {function} props.setError - set an error message on the page
  * @param {function} props.toSignIn - switch to Sign In modal
  * @param {function} props.toSignUp - switch to Sign Up modal
  */
-function ForgotPassword({ onSubmit, toSignIn, toSignUp }) {
+function ForgotPassword({ setError, onSubmit, toSignIn, toSignUp }) {
+    const [email, setEmail] = useState('');
+    const [success, setSuccess] = useState('');
 
-    function handleSubmit() {
-        onSubmit();
+    /**
+     * Uses Firebase to send password reset email, displaying errors 
+     * appropriately.
+     */
+    async function handleSubmit() {
+        try {
+            await firebase.resetPassword(email);
+            setSuccess("Sent Password Email");
+        } catch (error) {
+            // display user friendly error message if set
+            if (Object.keys(FIREBASE_AUTH_ERR_MESSAGES).includes(error.code)) {
+                setError(FIREBASE_AUTH_ERR_MESSAGES[error.code]);
+                return;
+            }
+            setError(error.message);
+        }
     }
 
     return (
@@ -30,6 +50,7 @@ function ForgotPassword({ onSubmit, toSignIn, toSignUp }) {
                 type="email"
                 className="form-control"
                 placeholder="Email"
+                onChange={e => setEmail(e.target.value.trim())}
             />
             <br/>
             <Button onClick={handleSubmit} style={{ width: "100%" }}>
@@ -48,6 +69,9 @@ function ForgotPassword({ onSubmit, toSignIn, toSignUp }) {
                     </a>
                 </Col>
             </Row>
+            {!!success && (
+                <Alert variant="success">{success}</Alert>
+            )}
         </div>
     );
 }

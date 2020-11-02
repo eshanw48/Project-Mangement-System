@@ -3,8 +3,12 @@
  */
 
 // package dependencies
-import React from "react";
+import React, { useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
+
+// helper functions and constants
+import firebase from "Utilities/Firebase";
+import { FIREBASE_AUTH_ERR_MESSAGES } from "Utilities/constants";
 
 
 /**
@@ -12,14 +16,29 @@ import { Button, Col, Row } from "react-bootstrap";
  * Provides options to move to the sign in and forgot password views.
  * 
  * @param {Object} props - component props 
- * @param {function} props.onSubmit - callback called on submit
+ * @param {function} props.setError - set an error message on the page
  * @param {function} props.toSignIn - switch to Sign In modal
  * @param {function} props.toForgot - switch to Forgot Password modal
  */
-function SignUp({ onSubmit, toSignIn, toForgot }) {
+function SignUp({ setError, toSignIn, toForgot }) {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-    function handleSubmit() {
-        onSubmit();
+    /**
+     * Uses Firebase to sign up with the credentials, displaying errors 
+     * appropriately.
+     */
+    async function handleSubmit() {
+        try {
+            await firebase.signUp(email, password);
+        } catch (error) {
+            // display user friendly error message if set
+            if (Object.keys(FIREBASE_AUTH_ERR_MESSAGES).includes(error.code)) {
+                setError(FIREBASE_AUTH_ERR_MESSAGES[error.code]);
+                return;
+            }
+            setError(error.message);
+        }
     }
 
     return (
@@ -30,6 +49,7 @@ function SignUp({ onSubmit, toSignIn, toForgot }) {
                 type="email"
                 className="form-control"
                 placeholder="Email"
+                onChange={e => setEmail(e.target.value.trim())}
             />
             <br/>
             <label htmlFor="password">Password</label>
@@ -38,6 +58,7 @@ function SignUp({ onSubmit, toSignIn, toForgot }) {
                 type="password"
                 className="form-control"
                 placeholder="Password"
+                onChange={e => setPassword(e.target.value.trim())}
             />
             <br/>
             <Button onClick={handleSubmit} style={{ width: "100%" }}>

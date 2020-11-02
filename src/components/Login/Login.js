@@ -7,8 +7,8 @@
 import React, { useState } from "react";
 import {
     Navbar,
-    Button,
     Modal,
+    Alert,
 } from "react-bootstrap";
 
 // local component dependencies
@@ -18,7 +18,6 @@ import ForgotPassword from './ForgotPassword';
 
 // style dependencies
 import common from "Styles/common.css";
-import styles from "Styles/about.css";
 
 // asset dependencies
 import logo from "Assets/logo.png";
@@ -34,10 +33,11 @@ const AUTH_COMPONENTS = [
 
 /**
  * Controller for login components (signing in, signing up, forgot password).
- * Shows the currently seletected component type.
+ * Shows the currently seletected component type and any appropriate errors.
  */
 function Login() {
-    let [authType, setAuthType] = useState(0);
+    const [authType, setAuthType] = useState(0);
+    const [error, setError] = useState('');
 
     // helper functions to navigate to each auth view type
     const navFuncs = {
@@ -65,8 +65,12 @@ function Login() {
                 </Modal.Header>
 
                 <Modal.Body>
-                    <AuthComponent {...navFuncs} />
+                    <AuthComponent setError={setError} {...navFuncs} />
                 </Modal.Body>
+
+                {!!error && (
+                    <Alert variant="danger"> {error} </Alert>
+                )}
             </Modal.Dialog>
 
         </div>
