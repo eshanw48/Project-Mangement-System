@@ -8,20 +8,33 @@ import React from "react";
 import {
     Navbar,
     Jumbotron,
+    Nav,
+    NavItem,
+    Button
 } from "react-bootstrap";
 
 // style dependencies
 import common from "Styles/common.css";
 import styles from "Styles/about.css";
+import Welcome from "Components/Welcome";
 
 // asset dependencies
 import logo from "Assets/logo.png";
 
+// helper functions and constants for firebase
+import firebase from "Utilities/Firebase";
+import { FIREBASE_AUTH_ERR_MESSAGES } from "Utilities/constants";
 
 /**
  * The Dashboard page, showing relevant information on sign in.
  */
 function Dashboard() {
+
+    async function handleSignOut() {
+        await firebase.signOut();
+    }
+
+
     return (
         <div>
 
@@ -30,10 +43,17 @@ function Dashboard() {
                     <img className={common.Logo} src={logo} width={42}/>
                     <span className={common.LogoLabel}> Project </span>
                 </Navbar.Brand>
+
+                <Nav className="ml-auto">
+                    <NavItem>
+                            <Button variant="light" onClick = {handleSignOut}> SignOut </Button>
+                    </NavItem>
+                </Nav>
+
             </Navbar>
 
             <Jumbotron className={styles.Container}>
-                This is the Dashboard
+                <h1>Welcome User</h1>
             </Jumbotron>
 
         </div>

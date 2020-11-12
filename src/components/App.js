@@ -17,6 +17,7 @@ import About from "Components/About";
 import Login from "Components/Login";
 import Dashboard from "Components/Dashboard";
 import UserSession from "Components/UserSession";
+import Welcome from "Components/Welcome";
 
 
 /**
@@ -43,7 +44,7 @@ function App() {
         }
         // reroute /login to /dashboard if already logged in
         if (authed === true && component === Login) {
-            return () => <Redirect to="/dashboard" />;
+            return () => <Redirect to="/welcome" />;
         }
         // return original component if already auth'd
         return component;
@@ -57,6 +58,7 @@ function App() {
                 <Switch>
                     <Route exact path="/login" component={withAuth(Login)} />
                     <Route exact path="/dashboard" component={withAuth(Dashboard)} />
+                    <Route exact path="/welcome" component={withAuth(Welcome)} />
                     <Route component={About} />
                 </Switch>
             </Router>
