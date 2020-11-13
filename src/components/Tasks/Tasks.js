@@ -114,16 +114,16 @@ function Tasks(){
 
     return(
         <div style ={{textAlign: "center"}}>
-        <TasksForm addTasks={addTasks} />
-        {tasks.map((tasks, index) => (
-            <TasksList
-              key={index}
-              index={index}
-              tasks={tasks}
-              completeTasks={completeTasks}
-              removeTasks={removeTasks}
-            />
-          ))}
+          <TasksForm addTasks={addTasks} />
+          {tasks.map((tasks, index) => (
+              <TasksList
+                key={index}
+                index={index}
+                tasks={tasks}
+                completeTasks={completeTasks}
+                removeTasks={removeTasks}
+              />
+            ))}
         </div>
     );  
     

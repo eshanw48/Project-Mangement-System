@@ -34,6 +34,8 @@ import logo from "Assets/logo.png";
 import firebase from "Utilities/Firebase";
 import { FIREBASE_AUTH_ERR_MESSAGES } from "Utilities/constants";
 
+import MyTasks from "./MyTasks.js";
+
 /**
  * The Dashboard page, showing relevant information on sign in.
  */
@@ -63,9 +65,13 @@ function Dashboard() {
             </Navbar>
 
             <Jumbotron className={styles.Container}>
+              
                 <h1>Welcome User</h1>
-
-                <Link to ="/tasks">Click here for add/edit tasks</Link> 
+                <Link to="/tasks">Click here for add/edit tasks</Link> 
+                <br />
+                <br />
+                <MyTasks />
+            
                 
             </Jumbotron>
 
