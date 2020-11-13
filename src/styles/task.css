@@ -1,3 +1,4 @@
 .task {
     padding: 7px;
+    display: flex;
 }

@@ -27,7 +27,7 @@ function TasksList({ tasks, index, completeTasks, removeTasks })
     return (
       <div className = {task.task}
           style={{ textDecoration: tasks.isCompleted ? "line-through" : "" }}>
-          {tasks.text}
+            <p>Description: {tasks.text} , Assigne: {tasks.assigne}</p>
           <Button onClick={() => completeTasks(index)}>Complete</Button>
           <Button onClick={() => removeTasks(index)}>x</Button>
         </div>
@@ -38,12 +38,14 @@ function TasksList({ tasks, index, completeTasks, removeTasks })
 function TasksForm({addTasks}){
 
         const [value, setValue] = React.useState("");
+        const [value2, setValue2] = React.useState("");
 
         const handleSubmit = e => {
         e.preventDefault();
-        if (!value) return;
-        addTasks(value);
+        if (!value || !value2) return;
+        addTasks(value,value2);
         setValue("");
+        setValue2("");
         };
 
         return(
@@ -58,6 +60,9 @@ function TasksForm({addTasks}){
 
                 <label>Enter a Task to Add:</label>
                 <input id="item" name ="item" type="text" placeholder="Enter a task" value={value} onChange={e => (setValue(e.target.value))}  ></input>
+
+                <label>Enter Assigne of Task:</label>
+                <input id="assign" name="assign" type="assign" placeholder="Enter an assigne" value={value2} onChange={e => (setValue2(e.target.value))} />
                 
                 <br>
                 </br>
@@ -80,12 +85,16 @@ function Tasks(){
     const [tasks, setTasks] = React.useState([
         {
           text: "Hardcoded Tasks",
-          isCompleted: false
+          isCompleted: false,
+          assigne: "Person" ,
+          tags: "Tag" 
         }
       ]);
 
-      const addTasks = text => {
-        const newTasks = [...tasks, { text }];
+      const addTasks = (text,assigne) => {
+          console.log(text);
+          console.log(assigne);
+        const newTasks = [...tasks, { text,assigne }];
         setTasks(newTasks);
       };
 
