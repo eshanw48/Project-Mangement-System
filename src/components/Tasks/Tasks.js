@@ -13,6 +13,7 @@ import {
 import common from "Styles/common.css";
 import styles from "Styles/about.css";
 import Welcome from "Components/Welcome";
+import task from "Styles/task.css";
 
 // asset dependencies
 import logo from "Assets/logo.png";
@@ -24,14 +25,11 @@ import { FIREBASE_AUTH_ERR_MESSAGES } from "Utilities/constants";
 function TasksList({ tasks, index, completeTasks, removeTasks })
 {
     return (
-        <div
-          style={{ textDecoration: tasks.isCompleted ? "line-through" : "" }}
-        >
+      <div className = {task.task}
+          style={{ textDecoration: tasks.isCompleted ? "line-through" : "" }}>
           {tasks.text}
-          <div>
-            <Button onClick={() => completeTasks(index)}>Complete</Button>
-            <Button onClick={() => removeTasks(index)}>x</Button>
-          </div>
+          <Button onClick={() => completeTasks(index)}>Complete</Button>
+          <Button onClick={() => removeTasks(index)}>x</Button>
         </div>
       );
 
