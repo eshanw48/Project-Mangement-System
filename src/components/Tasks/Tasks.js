@@ -8,14 +8,6 @@ import {
     Button
 } from "react-bootstrap";
 
-import {
-    BrowserRouter as Router,
-    Route,
-    Switch,
-    Redirect,
-    Link
-} from "react-router-dom";
-
 
 // style dependencies
 import common from "Styles/common.css";
@@ -37,8 +29,8 @@ function TasksList({ tasks, index, completeTasks, removeTasks })
         >
           {tasks.text}
           <div>
-            <button onClick={() => completeTasks(index)}>Complete</button>
-            <button onClick={() => removeTasks(index)}>x</button>
+            <Button onClick={() => completeTasks(index)}>Complete</Button>
+            <Button onClick={() => removeTasks(index)}>x</Button>
           </div>
         </div>
       );
@@ -83,24 +75,13 @@ function TasksForm({addTasks}){
 
         )
 
-
-    
-
 }
 
 function Tasks(){
 
     const [tasks, setTasks] = React.useState([
         {
-          text: "Learn about React",
-          isCompleted: false
-        },
-        {
-          text: "Meet friend for lunch",
-          isCompleted: false
-        },
-        {
-          text: "Build really cool todo app",
+          text: "Hardcoded Tasks",
           isCompleted: false
         }
       ]);
@@ -125,8 +106,9 @@ function Tasks(){
    
 
     return(
-        <div>
-          {tasks.map((tasks, index) => (
+        <div style ={{textAlign: "center"}}>
+        <TasksForm addTasks={addTasks} />
+        {tasks.map((tasks, index) => (
             <TasksList
               key={index}
               index={index}
@@ -135,7 +117,6 @@ function Tasks(){
               removeTasks={removeTasks}
             />
           ))}
-          <TasksForm addTasks={addTasks} />
         </div>
     );  
     
