@@ -18,6 +18,7 @@ import Login from "Components/Login";
 import Dashboard from "Components/Dashboard";
 import UserSession from "Components/UserSession";
 import Welcome from "Components/Welcome";
+import Tasks from "Components/Tasks";
 
 
 /**
@@ -59,6 +60,7 @@ function App() {
                     <Route exact path="/login" component={withAuth(Login)} />
                     <Route exact path="/dashboard" component={withAuth(Dashboard)} />
                     <Route exact path="/welcome" component={withAuth(Welcome)} />
+                    <Route exact path="/tasks" component={withAuth(Tasks)} />
                     <Route component={About} />
                 </Switch>
             </Router>

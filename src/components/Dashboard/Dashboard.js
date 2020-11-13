@@ -4,7 +4,7 @@
 //============================================================
 
 // package dependencies
-import React from "react";
+import React, { useState } from "react";
 import {
     Navbar,
     Jumbotron,
@@ -12,6 +12,15 @@ import {
     NavItem,
     Button
 } from "react-bootstrap";
+
+import {
+    BrowserRouter as Router,
+    Route,
+    Switch,
+    Redirect,
+    Link
+} from "react-router-dom";
+
 
 // style dependencies
 import common from "Styles/common.css";
@@ -35,6 +44,7 @@ function Dashboard() {
     }
 
 
+
     return (
         <div>
 
@@ -54,6 +64,9 @@ function Dashboard() {
 
             <Jumbotron className={styles.Container}>
                 <h1>Welcome User</h1>
+
+                <Link to ="/tasks">Click here for add/edit tasks</Link> 
+                
             </Jumbotron>
 
         </div>
