@@ -13,6 +13,15 @@ import {
     Button
 } from "react-bootstrap";
 
+import {
+    BrowserRouter as Router,
+    Route,
+    Switch,
+    Redirect,
+    Link
+} from "react-router-dom";
+
+
 // style dependencies
 import common from "Styles/common.css";
 import styles from "Styles/about.css";
@@ -27,6 +36,7 @@ import { FIREBASE_AUTH_ERR_MESSAGES } from "Utilities/constants";
 
 
 import {UserContext} from '../UserSession';
+import MyTasks from "./MyTasks.js";
 
 /**
  * The Dashboard page, showing relevant information on sign in.
@@ -39,7 +49,6 @@ function Dashboard() {
     async function handleSignOut() {
         await firebase.signOut();
     }
-
 
     return (
         <div>
@@ -60,6 +69,12 @@ function Dashboard() {
 
             <Jumbotron className={styles.Container}>
                 <h1>Welcome {user.name}</h1>
+              
+                <Link to="/tasks">My Team Page</Link> 
+                <br />
+                <br />
+                <MyTasks />
+                
             </Jumbotron>
 
         </div>
