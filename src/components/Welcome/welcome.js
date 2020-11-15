@@ -35,7 +35,7 @@ function welcome() {
     function handleChange(event) {
         const inputName = event.target.name;
         const value = event.target.value;
-        if (inputName === 'Username') {
+        if (inputName === 'Username' && value != ' ') {
             setName(value);
         } else if (inputName === 'code') {
             setcode(value);
@@ -51,7 +51,7 @@ function welcome() {
 
 
                 <label>Enter your Name:</label>
-                <input id="name" name = "Username" type="text" placeholder="Enter name of the user" value={name} onChange={handleChange}/>
+                <input id="name" name = "Username" type="text" placeholder="Enter name of the user" value={name} onChange={handleChange} required/>
                 <br/>
                 <br />
                 <label>Select your role:</label>
