@@ -50,7 +50,7 @@ function TasksForm({addTasks}){
         const handleSubmit = e => {
         e.preventDefault();
         if (!value || !value2) return;
-        addTasks(value,value2);
+        addTasks(value,value2, "In Progress");
         setValue("");
         setValue2("");
         };
@@ -103,8 +103,8 @@ function Tasks(){
         }
       ]);
 
-      const addTasks = (text,assigne) => {
-        const newTasks = [...tasks, { text,assigne }];
+      const addTasks = (text,assigne, inProgress) => {
+        const newTasks = [...tasks, { text, assigne, inProgress }];
         setTasks(newTasks);
       };
 
