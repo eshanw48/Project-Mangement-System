@@ -5,9 +5,16 @@ import {
     Jumbotron,
     Nav,
     NavItem,
-    Button
+    Button,
 } from "react-bootstrap";
 
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+  Link
+} from "react-router-dom";
 
 // style dependencies
 import common from "Styles/common.css";
@@ -82,6 +89,10 @@ function TasksForm({addTasks}){
 
 function Tasks(){
 
+    async function handleSignOut() {
+    await firebase.signOut();
+    }
+
     const [tasks, setTasks] = React.useState([
         {
           text: "Hardcoded Tasks",
@@ -111,7 +122,31 @@ function Tasks(){
    
 
     return(
-        <div>
+      <div>
+        <Navbar className={common.Header} expand="lg">
+                <Navbar.Brand href="/about">
+                    <img className={common.Logo} src={logo} width={42}/>
+                    <span className={common.LogoLabel}> Project </span>
+                </Navbar.Brand>
+
+                  <Nav className = "ml-auto">
+                       <Link to="/dashboard">
+                          <Button>
+                            Go back to DashBoard
+                          </Button>
+                       </Link>
+               
+                  </Nav>
+
+                <Nav className="ml-auto">
+                    <NavItem>
+                            <Button variant="light" onClick = {handleSignOut}> SignOut </Button>
+                    </NavItem>
+                </Nav>
+
+        </Navbar>
+        <br />
+        <br />
           <TasksForm addTasks={addTasks} />
         {tasks.map((tasks, index) => (
             
