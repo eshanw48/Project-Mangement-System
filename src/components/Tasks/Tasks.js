@@ -50,7 +50,7 @@ function TasksForm({addTasks}){
 
         return(
 
-            <div style ={{textAlign: "center"}}>
+          <div style = {{textAlign: "center"}}>
 
             <form>
                 <h1>Task Page</h1>
@@ -92,8 +92,6 @@ function Tasks(){
       ]);
 
       const addTasks = (text,assigne) => {
-          console.log(text);
-          console.log(assigne);
         const newTasks = [...tasks, { text,assigne }];
         setTasks(newTasks);
       };
@@ -113,9 +111,11 @@ function Tasks(){
    
 
     return(
-        <div style ={{textAlign: "center"}}>
+        <div>
           <TasksForm addTasks={addTasks} />
-          {tasks.map((tasks, index) => (
+        {tasks.map((tasks, index) => (
+            
+          <div>
               <TasksList
                 key={index}
                 index={index}
@@ -123,6 +123,8 @@ function Tasks(){
                 completeTasks={completeTasks}
                 removeTasks={removeTasks}
               />
+            </div>
+
             ))}
         </div>
     );  
