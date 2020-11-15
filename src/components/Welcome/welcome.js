@@ -1,16 +1,12 @@
 import React, { useState } from "react";
+import { useContext } from 'react';
 import { RadioGroup, Radio } from 'react-radio-group';
-import {
-    BrowserRouter as Router,
-    Route,
-    Switch,
-    Redirect,
-    Link
-} from "react-router-dom";
+import uuid from 'react-uuid';
 
 import { Button, Col, Row } from "react-bootstrap";
 import firebase from "Utilities/Firebase";
 import { FIREBASE_AUTH_ERR_MESSAGES } from "Utilities/constants";
+import {UserContext} from '../UserSession';
 
 
 function welcome() {
@@ -20,8 +16,13 @@ function welcome() {
     const [submitted, setsubmitted] = useState(0); //Front end use only
     const [code, setcode] = useState('');
 
-    function submission() {
+    const sessionData = useContext(UserContext);
+
+    function submission() {  
+        
         if (roleType === 'Project Manager') {
+            const newCode = uuid();
+            setcode(newCode);
             setsubmitted(1);
         } else {
             setsubmitted(2);
@@ -41,6 +42,24 @@ function welcome() {
             setcode(value);
         }
 
+    }
+
+    async function sendUserInfo() {
+        const user = sessionData.user;
+
+        if(roleType==='Team Member'){
+            const exists = await firebase.teamExists(code);
+            if(exists){
+                await firebase.joinTeam(name,roleType,user.uid,code)
+                window.location.reload(); 
+            }else{
+                alert("Team not found");
+            }
+        }else if(roleType==='Project Manager'){
+            await firebase.generateTeam(name,roleType,user.uid,code);
+            window.location.reload(); 
+        }
+        
     }
 
     return (
@@ -77,12 +96,10 @@ function welcome() {
 
 
                 <label>Team Code: </label>
-                {Math.random()}
+                {code}
                 <br />
-                <br />
-                <Link to = "/dashboard">
-                    <Button type = "button">Go to Dashboard</Button>
-                </Link>
+                <br />  
+                <Button onClick={sendUserInfo} type = "button">Go to Dashboard</Button>
 
             </form>
 
@@ -95,10 +112,7 @@ function welcome() {
                 <br/>
                 <br />
                 
-
-                <Link to = "/dashboard">
-                    <Button type = "button">Join Team</Button>
-                </Link>
+                <Button onClick={sendUserInfo} type = "button">Join Team</Button>              
 
             </form>
 

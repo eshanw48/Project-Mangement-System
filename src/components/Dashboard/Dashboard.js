@@ -4,7 +4,7 @@
 //============================================================
 
 // package dependencies
-import React from "react";
+import React, { useContext } from "react";
 import {
     Navbar,
     Jumbotron,
@@ -25,10 +25,16 @@ import logo from "Assets/logo.png";
 import firebase from "Utilities/Firebase";
 import { FIREBASE_AUTH_ERR_MESSAGES } from "Utilities/constants";
 
+
+import {UserContext} from '../UserSession';
+
 /**
  * The Dashboard page, showing relevant information on sign in.
  */
 function Dashboard() {
+
+    const sessionData = useContext(UserContext);
+    const user = sessionData.user;
 
     async function handleSignOut() {
         await firebase.signOut();
@@ -53,7 +59,7 @@ function Dashboard() {
             </Navbar>
 
             <Jumbotron className={styles.Container}>
-                <h1>Welcome User</h1>
+                <h1>Welcome {user.name}</h1>
             </Jumbotron>
 
         </div>

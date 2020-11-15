@@ -27,6 +27,7 @@ import Welcome from "Components/Welcome";
  */
 function App() {
     const [authed, setAuthed] = useState(undefined);
+    const [onboard, setOnboard] = useState(undefined);
 
     /**
      * Wraps given component with auth condition, rerouting to the
@@ -42,18 +43,31 @@ function App() {
             if (component === Login) return Login;
             return () => <Redirect to="/login" />;
         }
+
+        //reroute to welcome if not onboarded
+        if (onboard === false) {
+            // prevent routing loop and return welcome if not onboarded
+            if (component === Welcome) return Welcome;
+            return () => <Redirect to="/welcome"/>;
+        }
+        
+        // reroute /welcome to /dashboard if onboarded
+        if (onboard === true && component === Welcome) {
+          return () => <Redirect to="/dashboard" />;
+        }
+
         // reroute /login to /dashboard if already logged in
         if (authed === true && component === Login) {
-            return () => <Redirect to="/welcome" />;
+          return () => <Redirect to="/dashboard" />;
         }
-        // return original component if already auth'd
+        // return original component if already auth'd and onboarded
         return component;
     }
 
     // wrap app tree with user session context, so user auth data
     // can be used throughout the DOM tree
     return (
-        <UserSession setAuthed={setAuthed}>
+        <UserSession setAuthed={setAuthed} setOnboard={setOnboard}>
             <Router>
                 <Switch>
                     <Route exact path="/login" component={withAuth(Login)} />

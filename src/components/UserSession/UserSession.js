@@ -21,7 +21,7 @@ export const UserContext = React.createContext(null);
  * @param {function} props.setAuthed - function to set auth state
  * @param {array} children - children components to render
  */
-const UserSession = ({ setAuthed, children }) => {
+const UserSession = ({ setAuthed, setOnboard, children }) => {
     const [user, setUser] = useState(null);
 
     const sessionData = {
@@ -33,8 +33,12 @@ const UserSession = ({ setAuthed, children }) => {
      * 
      * @param {string} uid - uid of user to fetch
      */
-    async function fetchUserData(uid) {
-        // TODO: Implement
+    async function fetchUserData(uid) {  
+        const userData = await firebase.getUserData(uid); 
+        if(userData!==null){
+            setUser({ name: userData.name,role: userData.role,uid:userData.uid,team: userData.team});
+        }
+        setOnboard(!!userData); 
     }
 
     /**
