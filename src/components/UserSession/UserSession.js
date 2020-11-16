@@ -1,6 +1,6 @@
 /**
  * Handles User Session data and context
- */ 
+ */
 
 // dependencies
 import React, { useState, useEffect } from 'react';
@@ -33,12 +33,17 @@ const UserSession = ({ setAuthed, setOnboard, children }) => {
      * 
      * @param {string} uid - uid of user to fetch
      */
-    async function fetchUserData(uid) {  
-        const userData = await firebase.getUserData(uid); 
-        if(userData!==null){
-            setUser({ name: userData.name,role: userData.role,uid:userData.uid,team: userData.team});
+    async function fetchUserData(uid) {
+        const userData = await firebase.getUserData(uid);
+        if (userData !== null) {
+            setUser({
+                name: userData.name,
+                role: userData.role,
+                uid: userData.uid,
+                team: userData.team
+            });
         }
-        setOnboard(!!userData); 
+        setOnboard(!!userData);
     }
 
     /**

@@ -20,14 +20,17 @@ try {
 }
 
 
-// global APIs from Firebase to use
+// globals
+// --------------------
+
 const auth = firebase.auth();
 const db = firebase.firestore();
+const rt = firebase.database();
 
-/**
- * User Auth Helpers
- */
 
+
+// User Auth Helpers
+// --------------------
 
 /**
  * Signs in with given user credentials.
@@ -85,6 +88,9 @@ export function onAuthStateChanged(cb) {
 }
 
 
+// User Related Helpers
+// --------------------
+
 /**
  * Onboards a user by adding them to the firestore database
  * 
@@ -93,20 +99,42 @@ export function onAuthStateChanged(cb) {
  * @param {string} uid - unique user id
  * @param {string} teamCode - unique id of the users team
  */
-export function onBoard(name,role,uid,teamCode) {
-   db.collection("users").doc(uid).set({
+export function onBoard(name, role, uid, teamCode) {
+    db.collection("users").doc(uid).set({
         name: name,
         role: role,
         uid: uid,
         team: teamCode
-    })
-    .then(function() {
-        console.log("User onboarded");
-    })
-    .catch(function(error) {
-        console.error("Error writing document: ", error);
-    });
+    }, { merge: true })
+        .then(function () {
+            console.log("User onboarded");
+        })
+        .catch(function (error) {
+            console.error("Error writing document: ", error);
+        });
 }
+
+/**
+ * Get user data from firestore
+ * 
+ * @param {string} uid - unique id of user
+ * @return {Object} - response status details
+ */
+export function getUserData(uid) {
+    return db.collection("users").doc(uid).get()
+        .then(function (doc) {
+            if (doc.exists) {
+                return doc.data();
+            }
+            return null;
+        }).catch(function (err) {
+            console.log('Error getting documents', err);
+        });
+};
+
+
+// Team Related Helpers
+// --------------------
 
 /**
  * Adds a team meamber to a team in the database. Will then onboard the user. 
@@ -117,42 +145,18 @@ export function onBoard(name,role,uid,teamCode) {
  * @param {string} teamCode - unique id of the users team
  * @return {Object} - response status details
  */
-export function joinTeam(name,role,uid,teamCode) {
+export function joinTeam(name, role, uid, teamCode) {
     return db.collection("teams").doc(teamCode).update({
         members: firebase.firestore.FieldValue.arrayUnion(uid)
-     })
-     .then(function() {
-         onBoard(name,role,uid,teamCode);
-         console.log("User added to team");
-     })
-     .catch(function(error) {
-         console.error("Error updating: ", error);
-     });
- }
-
-
-/**
- * Get user data from firestore
- * 
- * @param {string} uid - unique id of user
- * @return {Object} - response status details
- */
-export function getUserData(uid) {
-    
-    var result;
-    return db.collection("users").doc(uid).get()
-      .then(function (doc) {
-        if (doc.exists) {
-          result = doc.data();
-          return result;
-        } else {
-          result = null;
-          return result;
-        }
-      }).catch (function (err) {
-        console.log('Error getting documents', err);
-      });
-};
+    })
+        .then(function () {
+            onBoard(name, role, uid, teamCode);
+            console.log("User added to team");
+        })
+        .catch(function (error) {
+            console.error("Error updating: ", error);
+        });
+}
 
 /**
  * Genrates a team in the database. Will then onboard the user. 
@@ -163,44 +167,132 @@ export function getUserData(uid) {
  * @param {string} teamCode - unique id of the users team
  * @return {Object} - response status details
  */
-export function generateTeam(name,role,uid,teamCode) {
+export function generateTeam(name, role, uid, teamCode) {
     return db.collection("teams").doc(teamCode).set({
-         id: teamCode,
-         name: "MyTeam",
-         description: "",
-         manager: uid,
-         members: [uid],
-         tags:[]
-     })
-     .then(function() {
-         onBoard(name,role,uid,teamCode);
-         console.log("Team Generated");
-     })
-     .catch(function(error) {
-         console.error("Error writing document: ", error);
-     });
- }
+        id: teamCode,
+        name: "MyTeam",
+        description: "",
+        manager: uid,
+        members: [uid],
+        tags: []
+    }, { merge: true })
+        .then(function () {
+            onBoard(name, role, uid, teamCode);
+            console.log("Team Generated");
+        })
+        .catch(function (error) {
+            console.error("Error writing document: ", error);
+        });
+}
 
- /**
- * Checks if the team exists in the database 
- *
- * @param {string} teamCode - unique id of the users team
- * @return {boolean} - if the team exists in the database
- */
- export function teamExists(teamCode) {
-    var result;
+/**
+* Checks if the team exists in the database 
+*
+* @param {string} teamCode - unique id of the users team
+* @return {boolean} - if the team exists in the database
+*/
+export function teamExists(teamCode) {
     return db.collection("teams").doc(teamCode).get()
-      .then(function (doc) {
-        if (doc.exists) {
-          return true;
-        } else {
-          return false;
-        }
-      }).catch (function (err) {
-        console.log('Error checking for team', err);
-      });
- }
+        .then(function (doc) {
+            return !!doc.exists;
+        }).catch(function (err) {
+            console.log('Error checking for team', err);
+        });
+}
 
+/**
+ * Attaches a listener for a given team, calling the given
+ * function on changes.
+ * 
+ * @param {string} team - UUID of the team
+ * @param {function} cb - function to be called with changes
+ * @return {function} - listener function to be used to detach later
+ */
+export function attachTeamListener(team, cb) {
+    return db.collection("teams").doc(team)
+        .onSnapshot(function (snapshot) {
+            cb && cb(snapshot.data());
+        });
+}
+
+/**
+ * Detaches a listener for a given team, given the listener.
+ * 
+ * @param {function} listener - original listener set up
+ * @param {Object} - completion of the detachment operation
+ */
+export function detachTeamListener(listener) {
+    return listener();
+}
+
+
+// Task Related Helpers
+// --------------------
+
+/**
+ * Creates a Task in the realtime database with the given data.
+ * Also adds it to the appropriate Team in the database.
+ * 
+ * @param {string} team - UUID of the team for the task
+ * @param {string} uid - UUID of task to be created
+ * @param {Object} task - task to be created
+ * @return {Object} - completion of the db update
+ */
+export function createTask(team, uid, task) {
+    const path = team + "/" + uid;
+    return rt.ref(path).set(task);
+}
+
+/**
+ * Updates a task in the database with the given data.
+ * 
+ * @param {string} team - UUID of the team for the task
+ * @param {string} uid - UUID of task to be created
+ * @param {Object} changes - mapping of field/values to change
+ * @return {Object} - completion of the db update
+ */
+export function updateTask(team, uid, changes) {
+    const path = team + "/" + uid;
+    return rt.ref(path).update(changes);
+}
+
+/**
+ * Deletes a task from the given team.
+ * 
+ * @param {string} team - UUID of the team for the task
+ * @param {string} uid - UUID of task to be deleted
+ * @return {Object} - completion of the db update
+ */
+export function deleteTask(team, uid) {
+    const path = team + "/" + uid;
+    return rt.ref(path).remove();
+}
+
+/**
+ * Attaches a listener for a given team's tasks, calling the given
+ * function on changes.
+ * 
+ * @param {string} team - UUID of the team
+ * @param {function} cb - function to be called with changes
+ * @return {function} - listener function to be used to detach later
+ */
+export function attachTasksListener(team, cb) {
+    return rt.ref(team).on("value", function(snapshot) {
+        cb && cb(snapshot.val())
+    });
+}
+
+/**
+ * Detaches a listener for a given team's tasks given the team 
+ * and listener function acquired.
+ * 
+ * @param {string} team - UUID of the team
+ * @param {function} listener - original listener set up
+ * @param {Object} - completion of the detachment operation
+ */
+export function detachTasksListener(team, listener) {
+    return rt.ref(team).off(listener);
+}
 
 /**
  * Function Exports
@@ -215,5 +307,11 @@ export default {
     getUserData,
     generateTeam,
     teamExists,
-    joinTeam
+    attachTeamListener,
+    detachTeamListener,
+    joinTeam,
+    createTask,
+    updateTask,
+    attachTasksListener,
+    detachTasksListener,
 };
