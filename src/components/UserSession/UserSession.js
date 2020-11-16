@@ -5,9 +5,6 @@
 // dependencies
 import React, { useState, useEffect, useReducer } from "react";
 
-// components
-import Loading from "Components/Loading";
-
 // helper functions
 import firebase from "Utilities/Firebase";
 
@@ -85,11 +82,6 @@ const UserSession = ({ setAuthed, setOnboard, children }) => {
 
         return detach;
     }, [user?.team]);
-
-    // show temporary loading page while fetching user info
-    if (!user || !user?.name) {
-        return <Loading />;
-    }
 
     return (
         <UserContext.Provider value={sessionData}>

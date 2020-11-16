@@ -19,6 +19,7 @@ import Dashboard from "Components/Dashboard";
 import UserSession from "Components/UserSession";
 import Welcome from "Components/Welcome";
 import Tasks from "Components/Tasks";
+import Loading from "Components/Loading";
 
 
 /**
@@ -69,15 +70,19 @@ function App() {
     // can be used throughout the DOM tree
     return (
         <UserSession setAuthed={setAuthed} setOnboard={setOnboard}>
-            <Router>
-                <Switch>
-                    <Route exact path="/login" component={withAuth(Login)} />
-                    <Route exact path="/dashboard" component={withAuth(Dashboard)} />
-                    <Route exact path="/welcome" component={withAuth(Welcome)} />
-                    <Route exact path="/tasks" component={withAuth(Tasks)} />
-                    <Route component={About} />
-                </Switch>
-            </Router>
+            {authed === undefined ? (
+                <Loading/>
+            ) : (
+                <Router>
+                    <Switch>
+                        <Route exact path="/login" component={withAuth(Login)} />
+                        <Route exact path="/dashboard" component={withAuth(Dashboard)} />
+                        <Route exact path="/welcome" component={withAuth(Welcome)} />
+                        <Route exact path="/tasks" component={withAuth(Tasks)} />
+                        <Route component={About} />
+                    </Switch>
+                </Router>
+            )}
         </UserSession>
     )
 }
