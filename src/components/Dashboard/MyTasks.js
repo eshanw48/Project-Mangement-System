@@ -25,9 +25,9 @@ import { FIREBASE_AUTH_ERR_MESSAGES } from "Utilities/constants";
 function TasksList({ tasks, index, completeTasks, removeTasks })
 {
     return (
-      <div className = {task.task}
-          style={{ textDecoration: tasks.isCompleted ? "line-through" : "" }}>
-            <p>Description: {tasks.text}</p>
+      <div className = {task.task}>
+          <p style={{ textDecoration: tasks.isCompleted ? "line-through" : "" }}>Description: {tasks.text}</p>
+          <strong>{tasks.inProgress} </strong>
           <Button onClick={() => completeTasks(index)}>Complete</Button>
         </div>
       );
@@ -41,13 +41,15 @@ function MyTasks(){
           text: "Hardcoded Tasks",
           isCompleted: false,
           assigne: "Person" ,
-          tags: "Tag" 
+          tags: "Tag", 
+          inProgress: "In Progress"
         }
       ]);
 
       const completeTasks = index => {
         const newTasks = [...tasks];
-        newTasks[index].isCompleted = true;
+        newTasks[index].isCompleted = true; 
+        newTasks[index].inProgress = "Completed";
         setTasks(newTasks);
       };
 

@@ -5,9 +5,16 @@ import {
     Jumbotron,
     Nav,
     NavItem,
-    Button
+    Button,
 } from "react-bootstrap";
 
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+  Link
+} from "react-router-dom";
 
 // style dependencies
 import common from "Styles/common.css";
@@ -25,9 +32,9 @@ import { FIREBASE_AUTH_ERR_MESSAGES } from "Utilities/constants";
 function TasksList({ tasks, index, completeTasks, removeTasks })
 {
     return (
-      <div className = {task.task}
-          style={{ textDecoration: tasks.isCompleted ? "line-through" : "" }}>
-            <p>Description: {tasks.text} , Assigne: {tasks.assigne}</p>
+      <div className = {task.task}>
+        <p style={{ textDecoration: tasks.isCompleted ? "line-through" : "" }}>Description: {tasks.text} , Assigne: {tasks.assigne}</p>
+        <strong>{ tasks.inProgress}</strong>
           <Button onClick={() => completeTasks(index)}>Complete</Button>
           <Button onClick={() => removeTasks(index)}>x</Button>
         </div>
@@ -43,7 +50,7 @@ function TasksForm({addTasks}){
         const handleSubmit = e => {
         e.preventDefault();
         if (!value || !value2) return;
-        addTasks(value,value2);
+        addTasks(value,value2, "In Progress");
         setValue("");
         setValue2("");
         };
@@ -82,23 +89,29 @@ function TasksForm({addTasks}){
 
 function Tasks(){
 
+    async function handleSignOut() {
+    await firebase.signOut();
+    }
+
     const [tasks, setTasks] = React.useState([
         {
           text: "Hardcoded Tasks",
           isCompleted: false,
           assigne: "Person" ,
-          tags: "Tag" 
+          tags: "Tag",
+          inProgress: "In Progress"
         }
       ]);
 
-      const addTasks = (text,assigne) => {
-        const newTasks = [...tasks, { text,assigne }];
+      const addTasks = (text,assigne, inProgress) => {
+        const newTasks = [...tasks, { text, assigne, inProgress }];
         setTasks(newTasks);
       };
 
       const completeTasks = index => {
         const newTasks = [...tasks];
         newTasks[index].isCompleted = true;
+        newTasks[index].inProgress = "Completed";
         setTasks(newTasks);
       };
     
@@ -111,7 +124,31 @@ function Tasks(){
    
 
     return(
-        <div>
+      <div>
+        <Navbar className={common.Header} expand="lg">
+                <Navbar.Brand href="/about">
+                    <img className={common.Logo} src={logo} width={42}/>
+                    <span className={common.LogoLabel}> Project </span>
+                </Navbar.Brand>
+
+                  <Nav className = "ml-auto">
+                       <Link to="/dashboard">
+                          <Button>
+                            Go back to DashBoard
+                          </Button>
+                       </Link>
+               
+                  </Nav>
+
+                <Nav className="ml-auto">
+                    <NavItem>
+                            <Button variant="light" onClick = {handleSignOut}> SignOut </Button>
+                    </NavItem>
+                </Nav>
+
+        </Navbar>
+        <br />
+        <br />
           <TasksForm addTasks={addTasks} />
         {tasks.map((tasks, index) => (
             
