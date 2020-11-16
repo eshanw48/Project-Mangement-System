@@ -21,6 +21,7 @@ import { UserContext } from 'Components/UserSession';
 // style dependencies
 import common from "Styles/common.css";
 import styles from "Styles/about.css";
+import taskStyle from "Styles/task.css";
 
 // asset dependencies
 import logo from "Assets/logo.png";
@@ -70,6 +71,20 @@ function Dashboard() {
 
         </div>
     )
+}
+
+
+function TasksList({ task, completeTasks, removeTasks }) {
+    return (
+        <div className={taskStyle.task}>
+            <p style={{ textDecoration: task.isCompleted ? "line-through" : "" }}>
+                Description: {task.text} , Assigne: {task.assigne}
+            </p>
+            <strong>{task.inProgress}</strong>
+            <Button onClick={() => completeTasks(task.uid)}>Complete</Button>
+            <Button onClick={() => removeTasks(task.uid)}>x</Button>
+        </div>
+    );
 }
 
 
