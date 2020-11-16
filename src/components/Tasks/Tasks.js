@@ -1,165 +1,105 @@
 // package dependencies
-import React from "react";
+import React, { useContext } from "react";
 import {
-  Navbar,
-  Nav,
-  NavItem,
-  Button,
+    Navbar,
+    Nav,
+    NavItem,
+    Button,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import uuid from "react-uuid";
+
+// components
+import Loading from "Components/Loading";
+import TasksForm from "./TasksForm";
+import { UserContext } from "Components/UserSession";
 
 // style dependencies
 import common from "Styles/common.css";
-import task from "Styles/task.css";
+import taskStyle from "Styles/task.css";
 
 // asset dependencies
 import logo from "Assets/logo.png";
 
 // helper functions and constants for firebase
 import firebase from "Utilities/Firebase";
-// import { EXAMPLE_TASKS } from "Utilities/data";
-
-
-function TasksList({ tasks, index, completeTasks, removeTasks }) {
-  return (
-    <div className={task.task}>
-      <p style={{ textDecoration: tasks.isCompleted ? "line-through" : "" }}>
-        Description: {tasks.text} , Assigne: {tasks.assigne}
-      </p>
-      <strong>{tasks.inProgress}</strong>
-      <Button onClick={() => completeTasks(index)}>Complete</Button>
-      <Button onClick={() => removeTasks(index)}>x</Button>
-    </div>
-  );
-}
-
-
-function TasksForm({ addTasks }) {
-  const [value, setValue] = React.useState("");
-  const [value2, setValue2] = React.useState("");
-
-  const handleSubmit = e => {
-    e.preventDefault();
-    if (!value || !value2) return;
-    addTasks(value, value2, "In Progress");
-    setValue("");
-    setValue2("");
-  };
-
-  return (
-    <div style={{ textAlign: "center" }}>
-      <form>
-        <h1>Task Page</h1>
-        <br/><br/>
-
-        <label>Enter a Task to Add:</label>
-        <input
-          id="item"
-          name="item"
-          type="text"
-          placeholder="Enter a task"
-          value={value}
-          onChange={e => (setValue(e.target.value))}
-        />
-
-        <label>Enter Assigne of Task:</label>
-        <input
-          id="assign"
-          name="assign"
-          type="assign"
-          placeholder="Enter an assigne"
-          value={value2}
-          onChange={e => (setValue2(e.target.value))}
-        />
-        <br/><br/>
-
-        <Button
-          type="button"
-          style={{ width: "50%" }}
-          onClick={handleSubmit}
-        >
-          Add Task
-        </Button>
-      </form>
-      <br /><br />
-    </div>
-  )
-}
 
 
 function Tasks() {
-  async function handleSignOut() {
-    await firebase.signOut();
-  }
+    let { team, tasks } = useContext(UserContext);
 
-  const [tasks, setTasks] = React.useState([
-        {
-            "text": "Hardcoded Tasks",
-            "isCompleted": false,
-            "assigne": "Person",
-            "tags": "Tag",
-            "inProgress": "In Progress"
-        }
-    ]);
+    async function handleSignOut() {
+        await firebase.signOut();
+    }
 
-  const addTasks = (text, assigne, inProgress) => {
-    const newTasks = [...tasks, { text, assigne, inProgress }];
-    setTasks(newTasks);
-  };
+    // adds a task to the db, renders changes
+    const addTasks = async (text, assigne, inProgress) => {
+        const task = { text, assigne, inProgress, isCompleted: false };
+        await firebase.createTask(team.uid, uuid(), task);
+    };
 
-  const completeTasks = index => {
-    const newTasks = [...tasks];
-    newTasks[index].isCompleted = true;
-    newTasks[index].inProgress = "Completed";
-    setTasks(newTasks);
-  };
+    // updates a task in the db, renders changes
+    const completeTasks = async uid => {
+        const changes = { isCompleted: true, inProgress: "Completed" };
+        await firebase.updateTask(team.uid, uid, changes);
+    };
 
-  const removeTasks = index => {
-    const newTasks = [...tasks];
-    newTasks.splice(index, 1);
-    setTasks(newTasks);
-  };
+    // removes a task from the db, renders changes
+    const removeTasks = async uid => {
+        await firebase.deleteTask(team.uid, uid);
+    };
 
-  return (
-    <div>
-      <Navbar className={common.Header} expand="lg">
-        <Navbar.Brand href="/about">
-          <img className={common.Logo} src={logo} width={42} />
-          <span className={common.LogoLabel}> Project </span>
-        </Navbar.Brand>
+    // wait for team uid to come in
+    if (!team?.uid) return <Loading />;
 
-        <Nav className="ml-auto">
-          <Link to="/dashboard">
-            <Button> Go back to Dashboard </Button>
-          </Link>
-        </Nav>
-
-        <Nav className="ml-auto">
-          <NavItem>
-            <Button variant="light" onClick={handleSignOut}> Sign out </Button>
-          </NavItem>
-        </Nav>
-      </Navbar>
-
-      <br /><br />
-      <TasksForm addTasks={addTasks} />
-
-      {tasks.map((tasks, index) => (
+    return (
         <div>
-          <TasksList
-            key={index}
-            index={index}
-            tasks={tasks}
-            completeTasks={completeTasks}
-            removeTasks={removeTasks}
-          />
+            <Navbar className={common.Header} expand="lg">
+                <Navbar.Brand href="/about">
+                    <img className={common.Logo} src={logo} width={42} />
+                    <span className={common.LogoLabel}> Project </span>
+                </Navbar.Brand>
+
+                <Nav className="ml-auto">
+                    <Link to="/dashboard">
+                        <Button> Go back to Dashboard </Button>
+                    </Link>
+                </Nav>
+
+                <Nav className="ml-auto">
+                    <NavItem>
+                        <Button variant="light" onClick={handleSignOut}> Sign out </Button>
+                    </NavItem>
+                </Nav>
+            </Navbar>
+
+            <br /><br />
+            <TasksForm addTasks={addTasks} />
+
+            {tasks.map(task => (
+                <TasksList
+                    key={task.uid}
+                    task={task}
+                    completeTasks={completeTasks}
+                    removeTasks={removeTasks}
+                />
+            ))}
         </div>
-      ))}
-
-    </div>
-  );
+    );
+}
 
 
+function TasksList({ task, completeTasks, removeTasks }) {
+    return (
+        <div className={taskStyle.task}>
+            <p style={{ textDecoration: task.isCompleted ? "line-through" : "" }}>
+                Description: {task.text} , Assigne: {task.assigne}
+            </p>
+            <strong>{task.inProgress}</strong>
+            <Button onClick={() => completeTasks(task.uid)}>Complete</Button>
+            <Button onClick={() => removeTasks(task.uid)}>x</Button>
+        </div>
+    );
 }
 
 // export for bundle

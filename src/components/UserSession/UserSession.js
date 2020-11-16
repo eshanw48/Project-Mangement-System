@@ -3,13 +3,13 @@
  */
 
 // dependencies
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from "react";
 
 // components
 import Loading from "Components/Loading";
 
 // helper functions
-import firebase from 'Utilities/Firebase';
+import firebase from "Utilities/Firebase";
 
 // React Context to hold user session related data
 export const UserContext = React.createContext(null);
@@ -25,11 +25,19 @@ export const UserContext = React.createContext(null);
  */
 const UserSession = ({ setAuthed, setOnboard, children }) => {
     const [user, setUser] = useState(null);
+    const [team, setTeam] = useState(null);
+    const [tasks, setTasks] = useReducer(parseTasks, []);
 
     const sessionData = {
         user,
         team,
+        tasks,
     };
+
+    // processes tasks from JSON format to array format
+    function parseTasks(_, data) {
+        return Object.keys(data).map(uid => ({ uid, ...data[uid] }));
+    }
 
     /**
      * Handler for uesr auth state changes. Fetches user data on change
@@ -55,6 +63,28 @@ const UserSession = ({ setAuthed, setOnboard, children }) => {
         const detach = firebase.onAuthStateChanged(handleAuthStateChange);
         return detach;
     }, [])
+
+    // set up listener on the team and all the tasks
+    useEffect(() => {
+        const team = user?.team;
+        if (!team) return;
+
+        // set up listener on team
+        const teamListener = firebase.attachTeamListener(team, data => {
+            setTeam(curr => ({ uid: data.id, ...curr, ...data }));
+        });
+        // set up listener on team's task list
+        const taskListener = firebase
+            .attachTasksListener(team, data => setTasks(data));
+
+        // detach listeners on unmount
+        function detach() {
+            firebase.detachTeamListener(teamListener);
+            firebase.detachTasksListener(team, taskListener);
+        }
+
+        return detach;
+    }, [user?.team]);
 
     // show temporary loading page while fetching user info
     if (!user || !user?.name) {

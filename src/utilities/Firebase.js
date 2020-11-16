@@ -316,7 +316,7 @@ export function attachTasksListener(team, cb) {
  * @param {Object} - completion of the detachment operation
  */
 export function detachTasksListener(team, listener) {
-    return rt.ref(team).off(listener);
+    return rt.ref(team).off("value", listener);
 }
 
 /**
@@ -339,6 +339,7 @@ export default {
     joinTeam,
     createTask,
     updateTask,
+    deleteTask,
     attachTasksListener,
     detachTasksListener,
 };
