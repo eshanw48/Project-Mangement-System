@@ -132,6 +132,31 @@ export function getUserData(uid) {
         });
 };
 
+/**
+ * Attaches a listener for the current user, calling the given
+ * function on changes.
+ * 
+ * @param {function} cb - function to be called with changes
+ * @return {function} - listener function to be used to detach later
+ */
+export function attachUserListener(cb) {
+    const uid = auth.currentUser.uid;
+    return db.collection("users").doc(uid)
+        .onSnapshot(function (snapshot) {
+            cb && cb(snapshot.data());
+        });
+}
+
+/**
+ * Detaches a listener for the current user, given the listener.
+ * 
+ * @param {function} listener - original listener set up
+ * @param {Object} - completion of the detachment operation
+ */
+export function detachUserListener(listener) {
+    return listener();
+}
+
 
 // Team Related Helpers
 // --------------------
@@ -305,6 +330,8 @@ export default {
     onAuthStateChanged,
     onBoard,
     getUserData,
+    attachUserListener,
+    detachUserListener,
     generateTeam,
     teamExists,
     attachTeamListener,

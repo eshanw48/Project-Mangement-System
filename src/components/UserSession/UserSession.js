@@ -5,9 +5,11 @@
 // dependencies
 import React, { useState, useEffect } from 'react';
 
+// components
+import Loading from "Components/Loading";
+
 // helper functions
 import firebase from 'Utilities/Firebase';
-
 
 // React Context to hold user session related data
 export const UserContext = React.createContext(null);
@@ -26,25 +28,8 @@ const UserSession = ({ setAuthed, setOnboard, children }) => {
 
     const sessionData = {
         user,
+        team,
     };
-
-    /**
-     * Fetches user data from Firebase and stores in local state
-     * 
-     * @param {string} uid - uid of user to fetch
-     */
-    async function fetchUserData(uid) {
-        const userData = await firebase.getUserData(uid);
-        if (userData !== null) {
-            setUser({
-                name: userData.name,
-                role: userData.role,
-                uid: userData.uid,
-                team: userData.team
-            });
-        }
-        setOnboard(!!userData);
-    }
 
     /**
      * Handler for uesr auth state changes. Fetches user data on change
@@ -55,7 +40,11 @@ const UserSession = ({ setAuthed, setOnboard, children }) => {
     async function handleAuthStateChange(user) {
         if (user && user.uid) {
             setUser({ uid: user.uid });
-            await fetchUserData(user.uid);
+            // set up listener for changes in user db
+            await firebase.attachUserListener(data => {
+                setUser(curr => ({ ...curr, ...data }));
+                setOnboard(!!data?.name);
+            });
         }
         setAuthed(!!user);
     }
@@ -66,6 +55,11 @@ const UserSession = ({ setAuthed, setOnboard, children }) => {
         const detach = firebase.onAuthStateChanged(handleAuthStateChange);
         return detach;
     }, [])
+
+    // show temporary loading page while fetching user info
+    if (!user || !user?.name) {
+        return <Loading />;
+    }
 
     return (
         <UserContext.Provider value={sessionData}>

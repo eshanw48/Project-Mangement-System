@@ -12,39 +12,28 @@ import {
     NavItem,
     Button
 } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
-import {
-    BrowserRouter as Router,
-    Route,
-    Switch,
-    Redirect,
-    Link
-} from "react-router-dom";
-
+// local components
+import MyTasks from "./MyTasks.js";
+import { UserContext } from 'Components/UserSession';
 
 // style dependencies
 import common from "Styles/common.css";
 import styles from "Styles/about.css";
-import Welcome from "Components/Welcome";
 
 // asset dependencies
 import logo from "Assets/logo.png";
 
 // helper functions and constants for firebase
 import firebase from "Utilities/Firebase";
-import { FIREBASE_AUTH_ERR_MESSAGES } from "Utilities/constants";
 
-
-import {UserContext} from '../UserSession';
-import MyTasks from "./MyTasks.js";
 
 /**
  * The Dashboard page, showing relevant information on sign in.
  */
 function Dashboard() {
-
-    const sessionData = useContext(UserContext);
-    const user = sessionData.user;
+    const { user } = useContext(UserContext);
 
     async function handleSignOut() {
         await firebase.signOut();
@@ -61,7 +50,9 @@ function Dashboard() {
 
                 <Nav className="ml-auto">
                     <NavItem>
-                            <Button variant="light" onClick = {handleSignOut}> SignOut </Button>
+                            <Button variant="light" onClick={handleSignOut}>
+                                SignOut
+                            </Button>
                     </NavItem>
                 </Nav>
 
