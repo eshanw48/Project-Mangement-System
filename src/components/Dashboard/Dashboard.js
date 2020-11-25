@@ -50,9 +50,14 @@ function Dashboard() {
                 </Navbar.Brand>
 
                 <Nav className="ml-auto">
+                    <NavItem style={{marginRight:'10px'}}>
+                        <Link to="/tasks">
+                            <Button>Team Page</Button>
+                        </Link>
+                    </NavItem>
                     <NavItem>
                             <Button variant="light" onClick={handleSignOut}>
-                                SignOut
+                                Sign out
                             </Button>
                     </NavItem>
                 </Nav>
@@ -61,8 +66,6 @@ function Dashboard() {
 
             <Jumbotron className={styles.Container}>
                 <h1>Welcome {user.name}</h1>
-              
-                <Link to="/tasks">My Team Page</Link> 
                 <br />
                 <br />
                 <MyTasks />

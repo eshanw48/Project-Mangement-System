@@ -61,12 +61,15 @@ function Tasks() {
                 </Navbar.Brand>
 
                 <Nav className="ml-auto">
-                    <Link to="/dashboard">
-                        <Button> Go back to Dashboard </Button>
-                    </Link>
+ 
                 </Nav>
 
                 <Nav className="ml-auto">
+                    <NavItem style={{marginRight:'10px'}}>
+                    <Link to="/dashboard">
+                        <Button>Dashboard</Button>
+                    </Link>
+                    </NavItem>
                     <NavItem>
                         <Button variant="light" onClick={handleSignOut}> Sign out </Button>
                     </NavItem>
@@ -75,7 +78,7 @@ function Tasks() {
 
             <br /><br />
             <TasksForm addTasks={addTasks} />
-
+            <div className={taskStyle.taskList}>
             {tasks.map(task => (
                 <TasksList
                     key={task.uid}
@@ -84,6 +87,8 @@ function Tasks() {
                     removeTasks={removeTasks}
                 />
             ))}
+            </div>
+
         </div>
     );
 }
@@ -92,12 +97,25 @@ function Tasks() {
 function TasksList({ task, completeTasks, removeTasks }) {
     return (
         <div className={taskStyle.task}>
-            <p style={{ textDecoration: task.isCompleted ? "line-through" : "" }}>
-                Description: {task.text} , Assigne: {task.assigne}
+            <div className={taskStyle.description}>
+                <p style={{ textDecoration: task.isCompleted ? "line-through" : "",margin:'6px' }}>
+                    {task.text}
+                </p>
+            </div>
+
+            <div className={taskStyle.assignee}>
+            <p style={{margin:'6px'}}>
+                {task.assigne} 
             </p>
+            </div>
+ 
             <strong>{task.inProgress}</strong>
-            <Button onClick={() => completeTasks(task.uid)}>Complete</Button>
-            <Button onClick={() => removeTasks(task.uid)}>x</Button>
+            <div className={taskStyle.buttons}>
+            <Button className={taskStyle.complete} onClick={() => completeTasks(task.uid)}>{task.isCompleted && <p style={{margin:'0px'}}>Completed</p>}{!task.isCompleted && <p style={{margin:'0px'}}>In progress</p>}</Button>
+            <Button variant="danger" className={taskStyle.deleteButton} onClick={() => removeTasks(task.uid)}>x</Button>
+            </div>
+            
+
         </div>
     );
 }

@@ -6,17 +6,22 @@ import { Button } from "react-bootstrap";
 import { UserContext } from "Components/UserSession";
 
 // style dependencies
-import task from "Styles/task.css";
+import taskStyle from "Styles/task.css";
 
 
 function TasksList({ tasks }) {
     return (
-        <div className={task.task}>
+        <div style={{margin:'10px 0px'}}className={taskStyle.task}>
+            <div className={taskStyle.description}>
             <p style={{ textDecoration: tasks.isCompleted ? "line-through" : "" }}>
                 Description: {tasks.text}
             </p>
+            </div>
             <strong>{tasks.inProgress} </strong>
-            <Button onClick={() => completeTasks(index)}>Complete</Button>
+            <div className={taskStyle.buttons}>
+            <Button className={taskStyle.complete} onClick={() => completeTasks(task.uid)}>{tasks.isCompleted && <p style={{margin:'0px'}}>Completed</p>}{!tasks.isCompleted && <p style={{margin:'0px'}}>In progress</p>}</Button>
+
+            </div>
         </div>
     );
 
@@ -26,7 +31,7 @@ function MyTasks() {
     const { tasks } = useContext(UserContext);
 
     return (
-        <div style={{ textAlign: "center" }}>
+        <div style={{padding:'0px'}} className={taskStyle.taskList}>
             {tasks.map((tasks, index) => (
                 <TasksList
                     key={index}
