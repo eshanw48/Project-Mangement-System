@@ -136,7 +136,7 @@ function TasksList({ task, completeTasks, removeTasks, editTasks }) {
             </div>
         </div>
         
-        <form className={taskStyle.taskList} style={{ display: edit ? "block" : "none"}} >
+        <form className={taskStyle.taskList} style={{ display: edit ? "block" : "none",padding:'0px'}} >
                 
             <div className={taskStyle.task}>
             <div className={taskStyle.description}>

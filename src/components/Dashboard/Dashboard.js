@@ -68,6 +68,7 @@ function Dashboard() {
                 <h1>Welcome {user.name}</h1>
                 <br />
                 <br />
+                <h2>Your Tasks</h2>
                 <MyTasks />
                 
             </Jumbotron>
