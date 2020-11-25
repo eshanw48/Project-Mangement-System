@@ -109,7 +109,7 @@ function TasksList({ task, completeTasks, removeTasks }) {
             </p>
             </div>
  
-            <strong>{task.inProgress}</strong>
+            
             <div className={taskStyle.buttons}>
             <Button className={taskStyle.complete} onClick={() => completeTasks(task.uid)}>{task.isCompleted && <p style={{margin:'0px'}}>Completed</p>}{!task.isCompleted && <p style={{margin:'0px'}}>In progress</p>}</Button>
             <Button variant="danger" className={taskStyle.deleteButton} onClick={() => removeTasks(task.uid)}>x</Button>

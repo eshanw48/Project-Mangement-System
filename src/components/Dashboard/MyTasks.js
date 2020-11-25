@@ -17,7 +17,7 @@ function TasksList({ tasks }) {
                 Description: {tasks.text}
             </p>
             </div>
-            <strong>{tasks.inProgress} </strong>
+            
             <div className={taskStyle.buttons}>
             <Button className={taskStyle.complete} onClick={() => completeTasks(task.uid)}>{tasks.isCompleted && <p style={{margin:'0px'}}>Completed</p>}{!tasks.isCompleted && <p style={{margin:'0px'}}>In progress</p>}</Button>
 

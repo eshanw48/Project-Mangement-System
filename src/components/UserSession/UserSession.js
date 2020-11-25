@@ -33,6 +33,9 @@ const UserSession = ({ setAuthed, setOnboard, children }) => {
 
     // processes tasks from JSON format to array format
     function parseTasks(_, data) {
+        if(data===null){
+            data=[];
+        }
         return Object.keys(data).map(uid => ({ uid, ...data[uid] }));
     }
 
