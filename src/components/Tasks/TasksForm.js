@@ -1,7 +1,7 @@
 // package dependencies
 import React from "react";
 import { Button } from "react-bootstrap";
-
+import taskStyle from "Styles/task.css";
 
 function TasksForm({ addTasks }) {
     const [value, setValue] = React.useState("");
@@ -17,40 +17,45 @@ function TasksForm({ addTasks }) {
 
     return (
         <div style={{ textAlign: "center" }}>
-            <form>
-                <h1>Task Page</h1>
-                <br /><br />
-
-                <label>Enter a Task to Add:</label>
+            <h1>Team Page</h1>
+            <form className={taskStyle.taskList}>
+                
+            <div className={taskStyle.task}>
+            <div className={taskStyle.description}>
+                <label style={{margin:'6px',marginRight:'3px'}}>Description: </label>
                 <input
+                style={{margin:'6px',marginLeft:'3px'}}
                     id="item"
                     name="item"
                     type="text"
-                    placeholder="Enter a task"
+                    placeholder="Enter Description"
                     value={value}
                     onChange={e => (setValue(e.target.value))}
                 />
-
-                <label>Enter Assigne of Task:</label>
-                <input
+            </div>
+            <div className={taskStyle.assignee}>
+                <label style={{margin:'6px',marginRight:'3px'}} >Assign to: </label>
+                <input style={{margin:'6px',marginLeft:'3px'}}
                     id="assign"
                     name="assign"
                     type="assign"
-                    placeholder="Enter an assigne"
+                    placeholder="Enter an assignee"
                     value={value2}
                     onChange={e => (setValue2(e.target.value))}
                 />
-                <br /><br />
-
-                <Button
+             </div>
+             <div className={taskStyle.buttons}>
+                <Button style={{width:'150.34px',height:'38px'}}
                     type="button"
-                    style={{ width: "50%" }}
+                    
                     onClick={handleSubmit}
                 >
                     Add Task
                 </Button>
+                </div>
+                </div>
             </form>
-            <br /><br />
+            
         </div>
     )
 }
