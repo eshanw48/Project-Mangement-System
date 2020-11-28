@@ -45,7 +45,7 @@ function TasksForm({ addTasks }) {
                 />
              </div>
              <div className={taskStyle.buttons}>
-                <Button style={{width:'150.34px',height:'38px'}}
+                <Button style={{width:'210.15px',height:'38px'}}
                     type="button"
                     
                     onClick={handleSubmit}

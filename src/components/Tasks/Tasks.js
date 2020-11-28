@@ -44,6 +44,11 @@ function Tasks() {
         await firebase.updateTask(team.uid, uid, changes);
     };
 
+    const editTasks = async (text, assigne, uid) => {
+        const editchanges = { text, assigne };
+        await firebase.updateTask(team.uid, uid, editchanges);
+    }
+
     // removes a task from the db, renders changes
     const removeTasks = async uid => {
         await firebase.deleteTask(team.uid, uid);
@@ -85,6 +90,7 @@ function Tasks() {
                     task={task}
                     completeTasks={completeTasks}
                     removeTasks={removeTasks}
+                    editTasks = {editTasks}
                 />
             ))}
             </div>
@@ -94,9 +100,22 @@ function Tasks() {
 }
 
 
-function TasksList({ task, completeTasks, removeTasks }) {
+function TasksList({ task, completeTasks, removeTasks, editTasks }) {
+
+    const [edit, setEdit] = React.useState(false);
+    const [text, setText] = React.useState(task.text);
+    const [assigne, setAssigne] = React.useState(task.assigne);
+
+
+    function handleEditTasks(){
+        editTasks(text, assigne, task.uid);
+        setEdit(false);
+    };
+
     return (
-        <div className={taskStyle.task}>
+
+        <>
+        <div className={taskStyle.task} style={{ display: edit ? "none" : "flex"}}>
             <div className={taskStyle.description}>
                 <p style={{ textDecoration: task.isCompleted ? "line-through" : "",margin:'6px' }}>
                     {task.text}
@@ -110,13 +129,45 @@ function TasksList({ task, completeTasks, removeTasks }) {
             </div>
  
             
-            <div className={taskStyle.buttons}>
-            <Button className={taskStyle.complete} onClick={() => completeTasks(task.uid)}>{task.isCompleted && <p style={{margin:'0px'}}>Completed</p>}{!task.isCompleted && <p style={{margin:'0px'}}>In progress</p>}</Button>
-            <Button variant="danger" className={taskStyle.deleteButton} onClick={() => removeTasks(task.uid)}>x</Button>
+            <div className={taskStyle.buttons}> 
+                <Button className={taskStyle.complete} onClick={() => completeTasks(task.uid)}>{task.isCompleted && <p style={{ margin: '0px' }}>Completed</p>}{!task.isCompleted && <p style={{ margin: '0px' }}>In progress</p>}</Button>
+                <Button className={taskStyle.edit} onClick={() => setEdit(true)} variant = "success">Edit</Button>
+                <Button variant ="danger" className={taskStyle.deleteButton} onClick={() => removeTasks(task.uid)}>x</Button>
             </div>
-            
-
         </div>
+        
+        <form className={taskStyle.taskList} style={{ display: edit ? "block" : "none",padding:'0px'}} >
+                
+            <div className={taskStyle.task}>
+            <div className={taskStyle.description}>
+                <label style={{margin:'6px',marginRight:'3px'}}>Edit Task Description: </label>
+                <input
+                style={{margin:'6px',marginLeft:'3px'}}
+                    id="item"
+                    name="item"
+                    type="text"
+                    value={text}
+                    onChange={e => (setText(e.target.value))}        
+                />
+            </div>
+            <div className={taskStyle.assignee}>
+                <label style={{margin:'6px',marginRight:'3px'}} >Edit Assignee: </label>
+                <input style={{margin:'6px',marginLeft:'3px'}}
+                    id="assign"
+                    name="assign"
+                    type="assign"
+                    value={assigne}
+                    onChange={e => (setAssigne(e.target.value))}
+                />
+             </div>
+             <div className={taskStyle.buttons}>
+                <Button style={{width:'210.15px',height:'38px'}}type="button" onClick = {handleEditTasks} > Edit Task </Button>
+                </div>
+                </div>
+            </form>    
+
+        </>
+
     );
 }
 
