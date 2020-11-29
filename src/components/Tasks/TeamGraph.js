@@ -9,16 +9,17 @@ import { UserContext } from "Components/UserSession";
 
 function TeamGraph() {
 
-    let { team, tasks } = useContext(UserContext);
+    let { tasks } = useContext(UserContext);
     const [graphData, setGraphData] = React.useState([]);
 
+    //Contains the data and labels for the graph
     const graph = {
         labels: getDates(),
         datasets: graphData,
       }
 
+    //Setting and formatting for the graph
     const graphSettings = {
-
         title:{
             display:true,
             text:'Tasks Completed',
@@ -49,12 +50,14 @@ function TeamGraph() {
         },
     }
 
+    //When tasks are changed the graph is updated with new data
     useEffect(() => {
         setGraphData([]);
         generateData();
         
     },[tasks]);
 
+    //Sends an array of the last 7 days in (mon day) format
     function getDates(){
         const months =['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
         let dates = [];
@@ -67,9 +70,19 @@ function TeamGraph() {
         return dates;
     }
 
+    //Generates data based on the tasks
     function generateData() {
+        /*
+            generates the object assignees containing the names of the assignees as keys and an array 
+            containing the number of task completed in the last 7 days as the values
+            for example
+            {
+                person1 : [2,3,4,3,2,1]
+                person2 : [2,5,2,1,2,3]
+                person3 : [2,3,1,3,4,1]
+            }
+        */
         let assignees = {};
-        //get names of all assignes
         var x;
         for (x of tasks) {
             if(!(x.assigne in assignees)){
@@ -88,9 +101,10 @@ function TeamGraph() {
         
         const colors =['rgba(0, 123, 255,0.4)','rgba(40, 167, 69,0.4)','rgba(220, 53, 69,0.4)','rgba(255, 193, 7,0.4)','rgba(23, 162, 184,0.4)','rgba(87, 192, 61,0.4)','rgba(236, 39, 39,0.4)']
     
+        //iterates through the assigne object and creates a new data set for each assignee
         var y=0;
         for (let key in assignees) {
-            let newGraph = {
+            let newDataSet = {
                 label: key,
                 fill: false,
                 lineTension: 0,
@@ -99,7 +113,7 @@ function TeamGraph() {
                 borderWidth: 3,
                 data: assignees[key]
               };
-            setGraphData(prevArray => [...prevArray, newGraph]);
+            setGraphData(prevArray => [...prevArray, newDataSet]);
             y++;
         }
     }
