@@ -17,11 +17,11 @@ function TeamGraph() {
         datasets: graphData,
       }
 
-    const graphOptions = {
+    const graphSettings = {
 
         title:{
             display:true,
-            text:'Tasks completed per week',
+            text:'Tasks Completed',
             fontSize:20
         },
         legend:{
@@ -31,8 +31,8 @@ function TeamGraph() {
             xAxes: [{
                 display: true,
                 scaleLabel: {
-                    display: true,
-                    labelString: 'Week',
+                    display: false,
+                    labelString: 'day',
                 },
             }],
             yAxes: [{
@@ -109,7 +109,7 @@ function TeamGraph() {
         <div style={{maxWidth:'1180px', height:"250px", margin: '20px auto'}}>
             <Line
             data={graph}
-            options={graphOptions}
+            options={graphSettings}
             />
         </div>
         </>
