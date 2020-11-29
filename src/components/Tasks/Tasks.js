@@ -12,6 +12,7 @@ import uuid from "react-uuid";
 // components
 import Loading from "Components/Loading";
 import TasksForm from "./TasksForm";
+import TeamGraph from "./TeamGraph";
 import { UserContext } from "Components/UserSession";
 
 // style dependencies
@@ -40,7 +41,7 @@ function Tasks() {
 
     // updates a task in the db, renders changes
     const completeTasks = async uid => {
-        const changes = { isCompleted: true, inProgress: "Completed" };
+        const changes = { isCompleted: true, inProgress: "Completed", date:(new Date()).toString()};
         await firebase.updateTask(team.uid, uid, changes);
     };
 
@@ -80,7 +81,7 @@ function Tasks() {
                     </NavItem>
                 </Nav>
             </Navbar>
-
+            
             <br /><br />
             <TasksForm addTasks={addTasks} />
             <div className={taskStyle.taskList}>
@@ -94,7 +95,7 @@ function Tasks() {
                 />
             ))}
             </div>
-
+            <TeamGraph/>
         </div>
     );
 }
