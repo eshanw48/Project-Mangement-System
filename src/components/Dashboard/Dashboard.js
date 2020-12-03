@@ -21,7 +21,6 @@ import { UserContext } from 'Components/UserSession';
 // style dependencies
 import common from "Styles/common.css";
 import styles from "Styles/about.css";
-import taskStyle from "Styles/task.css";
 
 // asset dependencies
 import logo from "Assets/logo.png";
@@ -36,32 +35,33 @@ import firebase from "Utilities/Firebase";
 function Dashboard() {
     const { user } = useContext(UserContext);
 
+    /**
+     * Logs out the current user through Firebase
+     */
     async function handleSignOut() {
         await firebase.signOut();
     }
 
     return (
         <div>
-
             <Navbar className={common.Header} expand="lg">
                 <Navbar.Brand href="/about">
-                    <img className={common.Logo} src={logo} width={42}/>
+                    <img className={common.Logo} src={logo} width={42} />
                     <span className={common.LogoLabel}> Project </span>
                 </Navbar.Brand>
 
                 <Nav className="ml-auto">
-                    <NavItem style={{marginRight:'10px'}}>
+                    <NavItem style={{ marginRight: "10px" }}>
                         <Link to="/tasks">
                             <Button>Team Page</Button>
                         </Link>
                     </NavItem>
                     <NavItem>
-                            <Button variant="light" onClick={handleSignOut}>
-                                Sign out
-                            </Button>
+                        <Button variant="light" onClick={handleSignOut}>
+                            Sign out
+                        </Button>
                     </NavItem>
                 </Nav>
-
             </Navbar>
 
             <Jumbotron className={styles.Container}>
@@ -70,25 +70,9 @@ function Dashboard() {
                 <br />
                 <h2>Your Tasks</h2>
                 <MyTasks />
-                
             </Jumbotron>
-
         </div>
     )
-}
-
-
-function TasksList({ task, completeTasks, removeTasks }) {
-    return (
-        <div className={taskStyle.task}>
-            <p style={{ textDecoration: task.isCompleted ? "line-through" : "" }}>
-                Description: {task.text} , Assigne: {task.assigne}
-            </p>
-            <strong>{task.inProgress}</strong>
-            <Button onClick={() => completeTasks(task.uid)}>Complete</Button>
-            <Button onClick={() => removeTasks(task.uid)}>x</Button>
-        </div>
-    );
 }
 
 

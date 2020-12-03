@@ -1,2 +1,2 @@
-// export the Dashboard page as this module
-export { default } from './Tasks';
+// export the Tasks page as this module
+export { default } from "./Tasks";

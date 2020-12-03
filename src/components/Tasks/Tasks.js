@@ -11,6 +11,7 @@ import uuid from "react-uuid";
 
 // components
 import Loading from "Components/Loading";
+import Task from "./Task";
 import TasksForm from "./TasksForm";
 import TeamGraph from "./TeamGraph";
 import { UserContext } from "Components/UserSession";
@@ -26,36 +27,74 @@ import logo from "Assets/logo.png";
 import firebase from "Utilities/Firebase";
 
 
+/**
+ * Renders main Tasks page, showing all tasks for the current team
+ * and a visual graph of productivity.
+ */
 function Tasks() {
+    // load in team and tasks data
     let { team, tasks } = useContext(UserContext);
 
+    /**
+     * Logs out the current user through Firebase
+     */
     async function handleSignOut() {
         await firebase.signOut();
     }
 
-    // adds a task to the db, renders changes
-    const addTasks = async (text, assigne, inProgress) => {
+    /**
+     * Creates a task with the given data and stores it in the database.
+     * 
+     * @param {string} text - text of task
+     * @param {string} assigne - person this task is for
+     * @param {boolean} inProgress - status of task
+     * @return {Object} - status of task creation
+     */
+    async function addTask(text, assigne, inProgress) {
         const task = { text, assigne, inProgress, isCompleted: false };
-        await firebase.createTask(team.uid, uuid(), task);
-    };
-
-    // updates a task in the db, renders changes
-    const completeTasks = async uid => {
-        const changes = { isCompleted: true, inProgress: "Completed", date:(new Date()).toString()};
-        await firebase.updateTask(team.uid, uid, changes);
-    };
-
-    const editTasks = async (text, assigne, uid) => {
-        const editchanges = { text, assigne };
-        await firebase.updateTask(team.uid, uid, editchanges);
+        return await firebase.createTask(team.uid, uuid(), task);
     }
 
-    // removes a task from the db, renders changes
-    const removeTasks = async uid => {
-        await firebase.deleteTask(team.uid, uid);
+    /**
+     * Marks the given task as complete and updates the database accordingly.
+     * 
+     * @param {string} uid - uid of task
+     * @return {Object} - status of task update
+     */
+    async function markComplete(uid) {
+        // mark as complete with current time
+        const changes = {
+            isCompleted: true,
+            inProgress: "Completed",
+            date: (new Date()).toString(),
+        };
+        return await firebase.updateTask(team.uid, uid, changes);
     };
 
-    // wait for team uid to come in
+    /**
+     * Updates the given task with the given text and assignee values.
+     * 
+     * @param {string} text - new text of task
+     * @param {string} assigne - new assignee of task
+     * @param {string} uid - uid of task
+     * @return {Object} - status of task update
+     */
+    async function editTask(text, assigne, uid) {
+        const editchanges = { text, assigne };
+        return await firebase.updateTask(team.uid, uid, editchanges);
+    }
+
+    /**
+     * Deletes this task from the database.
+     * 
+     * @param {string} uid - uid of task
+     * @return {Object} - status of task delete
+     */
+    async function removeTask(uid) {
+        await firebase.deleteTask(team.uid, uid);
+    }
+
+    // return the Loading screen while the team data loads in
     if (!team?.uid) return <Loading />;
 
     return (
@@ -66,111 +105,41 @@ function Tasks() {
                     <span className={common.LogoLabel}> Project </span>
                 </Navbar.Brand>
 
-                <Nav className="ml-auto">
- 
-                </Nav>
+                <Nav className="ml-auto"></Nav>
 
                 <Nav className="ml-auto">
-                    <NavItem style={{marginRight:'10px'}}>
-                    <Link to="/dashboard">
-                        <Button>Dashboard</Button>
-                    </Link>
+                    <NavItem style={{ marginRight: "10px" }}>
+                        <Link to="/dashboard">
+                            <Button>Dashboard</Button>
+                        </Link>
                     </NavItem>
                     <NavItem>
-                        <Button variant="light" onClick={handleSignOut}> Sign out </Button>
+                        <Button variant="light" onClick={handleSignOut}>
+                            Sign out
+                        </Button>
                     </NavItem>
                 </Nav>
             </Navbar>
-            
+
             <br /><br />
-            <TasksForm addTasks={addTasks} />
+
+            <TasksForm addTask={addTask} />
             <div className={taskStyle.taskList}>
-            {tasks.map(task => (
-                <TasksList
-                    key={task.uid}
-                    task={task}
-                    completeTasks={completeTasks}
-                    removeTasks={removeTasks}
-                    editTasks = {editTasks}
-                />
-            ))}
+                {tasks.map(task => (
+                    <Task
+                        key={task.uid}
+                        task={task}
+                        markComplete={() => markComplete(task.uid)}
+                        removeTask={() => removeTask(task.uid)}
+                        editTask={editTask}
+                    />
+                ))}
             </div>
-            <TeamGraph/>
+            <TeamGraph />
         </div>
     );
 }
 
-
-function TasksList({ task, completeTasks, removeTasks, editTasks }) {
-
-    const [edit, setEdit] = React.useState(false);
-    const [text, setText] = React.useState(task.text);
-    const [assigne, setAssigne] = React.useState(task.assigne);
-
-
-    function handleEditTasks(){
-        editTasks(text, assigne, task.uid);
-        setEdit(false);
-    };
-
-    return (
-
-        <>
-        <div className={taskStyle.task} style={{ display: edit ? "none" : "flex"}}>
-            <div className={taskStyle.description}>
-                <p style={{ textDecoration: task.isCompleted ? "line-through" : "",margin:'6px' }}>
-                    {task.text}
-                </p>
-            </div>
-
-            <div className={taskStyle.assignee}>
-            <p style={{margin:'6px'}}>
-                {task.assigne} 
-            </p>
-            </div>
- 
-            
-            <div className={taskStyle.buttons}> 
-                <Button className={taskStyle.complete} onClick={() => completeTasks(task.uid)}>{task.isCompleted && <p style={{ margin: '0px' }}>Completed</p>}{!task.isCompleted && <p style={{ margin: '0px' }}>In progress</p>}</Button>
-                <Button className={taskStyle.edit} onClick={() => setEdit(true)} variant = "success">Edit</Button>
-                <Button variant ="danger" className={taskStyle.deleteButton} onClick={() => removeTasks(task.uid)}>x</Button>
-            </div>
-        </div>
-        
-        <form className={taskStyle.taskList} style={{ display: edit ? "block" : "none",padding:'0px'}} >
-                
-            <div className={taskStyle.task}>
-            <div className={taskStyle.description}>
-                <label style={{margin:'6px',marginRight:'3px'}}>Edit Task Description: </label>
-                <input
-                style={{margin:'6px',marginLeft:'3px'}}
-                    id="item"
-                    name="item"
-                    type="text"
-                    value={text}
-                    onChange={e => (setText(e.target.value))}        
-                />
-            </div>
-            <div className={taskStyle.assignee}>
-                <label style={{margin:'6px',marginRight:'3px'}} >Edit Assignee: </label>
-                <input style={{margin:'6px',marginLeft:'3px'}}
-                    id="assign"
-                    name="assign"
-                    type="assign"
-                    value={assigne}
-                    onChange={e => (setAssigne(e.target.value))}
-                />
-             </div>
-             <div className={taskStyle.buttons}>
-                <Button style={{width:'210.15px',height:'38px'}}type="button" onClick = {handleEditTasks} > Edit Task </Button>
-                </div>
-                </div>
-            </form>    
-
-        </>
-
-    );
-}
 
 // export for bundle
 export default Tasks;
