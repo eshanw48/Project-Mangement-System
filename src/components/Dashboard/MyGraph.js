@@ -98,7 +98,7 @@ function MyGraph() {
             if (!(x.assigne in assignees) && x.assigne === user.name) {
                 assignees[x.assigne] = [0, 0, 0, 0, 0, 0, 0];
             }
-            if (x.isCompleted) {
+            if (x.isCompleted && x.assigne === user.name) {
 
                 const currentDate = new Date();
                 const completionDate = Date.parse(x.date);
