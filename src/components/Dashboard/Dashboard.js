@@ -17,6 +17,8 @@ import { Link } from "react-router-dom";
 // local components
 import MyTasks from "./MyTasks.js";
 import { UserContext } from 'Components/UserSession';
+import MyGraph from "./MyGraph";
+
 
 // style dependencies
 import common from "Styles/common.css";
@@ -71,6 +73,9 @@ function Dashboard() {
                 <h2>Your Tasks</h2>
                 <MyTasks />
             </Jumbotron>
+
+            <MyGraph />
+
         </div>
     )
 }

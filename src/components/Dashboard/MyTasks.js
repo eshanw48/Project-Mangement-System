@@ -28,8 +28,13 @@ function MyTasks() {
      * @return {Object} - result of task update
      */
     async function markComplete(uid) {
-        const changes = { isCompleted: true, inProgress: "Completed" };
-        return await firebase.updateTask(team.uid, uid, changes);
+       // mark as complete with current time
+       const changes = {
+        isCompleted: true,
+        inProgress: "Completed",
+        date: (new Date()).toString(),
+    };
+    return await firebase.updateTask(team.uid, uid, changes);
     }
 
     /**
