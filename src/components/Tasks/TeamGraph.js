@@ -91,6 +91,7 @@ function TeamGraph() {
      */
     function generateData() {
         let assignees = {};
+        let monthDates = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
         var x;
         for (x of tasks) {
             if (!(x.assigne in assignees)) {
@@ -98,10 +99,17 @@ function TeamGraph() {
             }
             if (x.isCompleted) {
                 const currentDate = new Date();
-                const completionDate = Date.parse(x.date);
-                const diffTime = currentDate - completionDate;
-                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                assignees[x.assigne][6 - diffDays]++;
+                const completionDate = new Date(Date.parse(x.date));
+                const diffTime = 0;
+                if (currentDate.getMonth() === currentDate.getMonth()) {
+                    diffTime = currentDate.getDate() - completionDate.getDate();
+                }
+                else {
+                    diffTime = monthDates[completionDate.getMonth()] - completionDate.getDate();
+                    diffTime += currentDate.getDate();
+                }
+                assignees[x.assigne][6 - diffTime]++;
+                
             }
         }
 
