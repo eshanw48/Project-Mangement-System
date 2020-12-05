@@ -54,6 +54,21 @@ export const GRAPH_COLORS = [
     "rgba(236, 39, 39, 0.4)",
 ]
 
+export const MONTH_DATES = [
+    31,
+    28,
+    31,
+    30,
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31,
+]
+
 
 // export constants
 export default {
@@ -61,5 +76,6 @@ export default {
     FIREBASE_AUTH_ERR_MESSAGES,
     MONTH_LABELS,
     GRAPH_COLORS,
+    MONTH_DATES,
 }
 

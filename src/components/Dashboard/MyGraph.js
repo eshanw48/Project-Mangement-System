@@ -6,7 +6,7 @@ import { Line } from "react-chartjs-2";
 import { UserContext } from "Components/UserSession";
 
 // utility functions and constants
-import { MONTH_LABELS, GRAPH_COLORS } from "Utilities/constants";
+import { MONTH_LABELS, GRAPH_COLORS, MONTH_DATES } from "Utilities/constants";
 
 
 /**
@@ -99,12 +99,18 @@ function MyGraph() {
                 assignees[x.assigne] = [0, 0, 0, 0, 0, 0, 0];
             }
             if (x.isCompleted && x.assigne === user.name) {
-
                 const currentDate = new Date();
-                const completionDate = Date.parse(x.date);
-                const diffTime = currentDate - completionDate;
-                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                assignees[x.assigne][6 - diffDays]++;
+                const completionDate = new Date(Date.parse(x.date));
+                var diffTime = 0;
+                if (currentDate.getMonth() === currentDate.getMonth()) {
+                    diffTime = currentDate.getDate() - completionDate.getDate();
+                }
+                else {
+                    diffTime = MONTH_DATES[completionDate.getMonth()] - completionDate.getDate();
+                    diffTime += currentDate.getDate();
+                }
+                assignees[x.assigne][6 - diffTime]++;
+                
             }
         }
 

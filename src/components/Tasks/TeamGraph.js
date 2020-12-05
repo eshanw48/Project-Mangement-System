@@ -6,7 +6,7 @@ import { Line } from "react-chartjs-2";
 import { UserContext } from "Components/UserSession";
 
 // utility functions and constants
-import { MONTH_LABELS, GRAPH_COLORS } from "Utilities/constants";
+import { MONTH_LABELS, GRAPH_COLORS, MONTH_DATES } from "Utilities/constants";
 
 
 /**
@@ -91,7 +91,6 @@ function TeamGraph() {
      */
     function generateData() {
         let assignees = {};
-        let monthDates = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
         var x;
         for (x of tasks) {
             if (!(x.assigne in assignees)) {
@@ -100,12 +99,12 @@ function TeamGraph() {
             if (x.isCompleted) {
                 const currentDate = new Date();
                 const completionDate = new Date(Date.parse(x.date));
-                const diffTime = 0;
+                var diffTime = 0;
                 if (currentDate.getMonth() === currentDate.getMonth()) {
                     diffTime = currentDate.getDate() - completionDate.getDate();
                 }
                 else {
-                    diffTime = monthDates[completionDate.getMonth()] - completionDate.getDate();
+                    diffTime = MONTH_DATES[completionDate.getMonth()] - completionDate.getDate();
                     diffTime += currentDate.getDate();
                 }
                 assignees[x.assigne][6 - diffTime]++;
