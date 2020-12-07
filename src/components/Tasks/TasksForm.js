@@ -1,7 +1,8 @@
 // package dependencies
-import React from "react";
+import React, {useContext} from "react";
 import { Button } from "react-bootstrap";
 import style from "Styles/task.css";
+import { UserContext } from "Components/UserSession";
 
 
 /**
@@ -13,6 +14,9 @@ function TasksForm({ addTask }) {
     // keep track of task text and assignee
     const [description, setDescription] = React.useState("");
     const [assignee, setAssignee] = React.useState("");
+    const [error, setError] = React.useState("");
+    let { team } = useContext(UserContext);
+    //console.log(team);
 
     /**
      * Creates a task with the current text and assignee.
@@ -24,12 +28,18 @@ function TasksForm({ addTask }) {
         // prevent default submit event
         e.preventDefault();
         // do not create task if input is invalid
-        if (!description || !assignee) return;
+        if (!description || !assignee) setError("Please enter both the Description and the Assignee field.");
 
-        addTask(description, assignee, "In Progress");
-        // clear inputs
-        setDescription("");
-        setAssignee("");
+        else if (team.names.includes(assignee)) {
+            addTask(description, assignee, "In Progress");
+            // clear inputs
+            setDescription("");
+            setAssignee("");
+            setError("");
+        }
+        else {
+            setError("The user is not a part of the team.");
+        }
     }
 
     return (
@@ -75,6 +85,7 @@ function TasksForm({ addTask }) {
                     </div>
                 </div>
             </form>
+            {error}
         </div>
     )
 }

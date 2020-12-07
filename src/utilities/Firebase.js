@@ -172,7 +172,8 @@ export function detachUserListener(listener) {
  */
 export function joinTeam(name, role, uid, teamCode) {
     return db.collection("teams").doc(teamCode).update({
-        members: firebase.firestore.FieldValue.arrayUnion(uid)
+        members: firebase.firestore.FieldValue.arrayUnion(uid),
+        names: firebase.firestore.FieldValue.arrayUnion(name)
     })
         .then(function () {
             onBoard(name, role, uid, teamCode);
@@ -199,6 +200,7 @@ export function generateTeam(name, role, uid, teamCode) {
         description: "",
         manager: uid,
         members: [uid],
+        names: [name],
         tags: []
     }, { merge: true })
         .then(function () {
